@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.lambton.org.artistmanagement.bean.UserBean;
 
 @Controller
-public class DemoController {
+public class LoginController {
 
 	@RequestMapping("/login")    
 	public String getLogin(){ 
