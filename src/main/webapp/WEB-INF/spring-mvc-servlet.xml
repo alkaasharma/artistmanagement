@@ -16,6 +16,14 @@
 <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">    
 <property name="prefix" value="/WEB-INF/jsp/"></property>    
 <property name="suffix" value=".jsp"></property>    
+</bean>
+
+<bean id="ds"
+	class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+	<property name="url" value="jdbc:mysql://localhost:3306/assignment4"></property>
+	<property name="username" value="root"></property>
+	<property name="password" value="admin"></property>
 </bean>    
     
    
