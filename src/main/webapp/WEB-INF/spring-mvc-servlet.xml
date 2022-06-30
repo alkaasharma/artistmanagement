@@ -21,9 +21,17 @@
 <bean id="ds"
 	class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 	<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
-	<property name="url" value="jdbc:mysql://localhost:3306/assignment4"></property>
+	<property name="url" value="jdbc:mysql://localhost:3306/ams?serverTimezone=UTC"></property>
 	<property name="username" value="root"></property>
-	<property name="password" value="admin"></property>
+	<property name="password" value="loaded65"></property>
+</bean>
+
+<bean id="jt" class="org.springframework.jdbc.core.JdbcTemplate">
+	<property name="dataSource" ref="ds"></property>
+</bean>
+
+<bean id="loginDao" class="com.lambton.org.artistmanagement.dao.loginDAOclass">
+	<property name="template" ref="jt"></property>
 </bean>    
     
    

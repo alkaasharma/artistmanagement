@@ -20,13 +20,14 @@
 	<h3 style="color: red;">${errorMessage}</h3>
 </c:if>
 <form:form method="post" action="login/login" modelAttribute="login">
+<form:hidden path="userId"/>
   <div class="form-group">
     <label>Username: </label>
-    <input type="Username" id="username" required>
+    <form:input path="email" />
   </div>
   <div class="form-group">
     <label>Password: </label>
-    <input type="password" id="password" required>
+    <form:input path="password" />
   </div>
   <div class="form-group">
   <button id ="login" type="submit" class="btn btn-success">Login</button>
