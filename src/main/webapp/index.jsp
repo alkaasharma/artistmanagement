@@ -1,6 +1,6 @@
 <html>
 <body>
-<h2>Hello World!</h2>
-<a href="login">login</a>  
+<h2>Artist Management</h2>
+<a href="registration">click here to register with us!!!</a>  
 </body>
 </html>
