@@ -13,10 +13,11 @@ import com.lambton.org.artistmanagement.bean.User;
 import com.lambton.org.artistmanagement.service.RegistrationService;
 import com.lambton.org.artistmanagement.util.CaptchaUtil;
 
+
 @Controller
 public class RegistrationController {
 
-	@RequestMapping(value="/registration" , method = RequestMethod.GET)
+	@RequestMapping(value="/registrationForm" , method = RequestMethod.GET)
 	public String showRegistrationForm(Model model)
 	{   model.addAttribute("user", new User());
 	return "signUp";
@@ -29,7 +30,7 @@ public class RegistrationController {
 	{
 		RegistrationService service =new RegistrationService();
 		boolean  registeredOrNot=service.registrationProcess(user);
-		Boolean captchaResult=CaptchaUtil.matchCaptchaCode((String)session.getAttribute("CAPTCHA"),user.getCaptcha());
+		boolean captchaResult=CaptchaUtil.matchCaptchaCode((String)session.getAttribute("CAPTCHA"),user.getCaptcha());
 		if(!captchaResult || !registeredOrNot ) 
 		{   user.setCaptcha(null);
 		return new ModelAndView("signUp","user",user);

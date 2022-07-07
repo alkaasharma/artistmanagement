@@ -17,6 +17,27 @@ public class User {
 	private Role role;
 	private Department department;
 	
+	public User()
+	{
+		
+	}
+	
+	
+	public User(int userId, String firstName, String lastName, String password, String email, String address, Date dob,
+			Date registeredOn, String phoneNumber,Role role, Department department) {
+		super();
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.password = password;
+		this.email = email;
+		this.address = address;
+		this.dob = dob;
+		this.registeredOn = registeredOn;
+		this.phoneNumber = phoneNumber;
+		this.role = role;
+		this.department = department;
+	}
 	public int getUserId() {
 		return userId;
 	}
