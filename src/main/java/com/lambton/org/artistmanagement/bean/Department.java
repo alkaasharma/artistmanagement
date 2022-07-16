@@ -4,8 +4,12 @@ public class Department {
 
 	private int departmentId;
 	private String departmentName;
-	
-	
+
+
+
+	public Department() {// wht's the need to put default const while edit profile form
+
+	}
 	public Department(int departmentId, String departmentName) {
 		super();
 		this.departmentId = departmentId;
@@ -27,5 +31,5 @@ public class Department {
 	public String toString() {
 		return "Department [departmentId=" + departmentId + ", departmentName=" + departmentName + "]";
 	}
-	
+
 }

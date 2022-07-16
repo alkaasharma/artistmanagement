@@ -1,7 +1,5 @@
 package com.lambton.org.artistmanagement.bean;
 
-import java.util.Objects;
-
 public class Login {
 
 	private String email;

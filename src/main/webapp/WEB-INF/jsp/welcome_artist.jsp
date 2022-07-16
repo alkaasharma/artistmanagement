@@ -8,8 +8,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-<a href="welcomePage">Home</a>
-<a href="viewArtistProfile">view profile</a>
+WELCOME ${user.role.roleName}<br>
+<a href="viewArtistProfile">My profile</a>
 <a href="logoutProfile">Logout profile</a>
 </body>
 </html>

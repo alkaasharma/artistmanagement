@@ -4,8 +4,12 @@ public class Role {
 
 	private int roleId;
 	private String roleName;
-	
-	
+
+
+
+	public Role() {
+		super();
+	}
 	public Role(int roleId, String roleName) {
 		super();
 		this.roleId = roleId;
@@ -27,6 +31,6 @@ public class Role {
 	public String toString() {
 		return "Role [roleId=" + roleId + ", roleName=" + roleName + "]";
 	}
-	
-	
+
+
 }
