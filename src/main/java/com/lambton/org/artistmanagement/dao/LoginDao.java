@@ -1,12 +1,15 @@
 package com.lambton.org.artistmanagement.dao;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lambton.org.artistmanagement.bean.AccessRequest;
 import com.lambton.org.artistmanagement.bean.Department;
 import com.lambton.org.artistmanagement.bean.Login;
 import com.lambton.org.artistmanagement.bean.Role;
@@ -231,17 +234,27 @@ public class LoginDao {
 
 
 	private int noOfRecords;
-	public List<UserDto>getAllUsersByPage(int offset, int noOfRecords)
+	public List<UserDto>getAllUsersByPage(int offset, int noOfRecords, int departmentId)
 	{
-		 String query = "select SQL_CALC_FOUND_ROWS * from users limit " + offset + ", " + noOfRecords;
+		String query =null;
 		Connection connection=null;
 		UserDto userDto =null;
 		List<UserDto> UserDtoList=new ArrayList<UserDto>();
+		PreparedStatement statement=null;
 		try 
 		{
 			connection = DatabaseConnection.getConnectionObject();
-			PreparedStatement statement=connection.prepareStatement("select SQL_CALC_FOUND_ROWS * from users limit " + offset + ", " + noOfRecords);
-			System.out.println(query);
+			if(departmentId!=0)
+			{
+				query = "select SQL_CALC_FOUND_ROWS * from users where department_id =? limit " + offset + ", " + noOfRecords;
+			}
+			else 
+			{
+				query = "select SQL_CALC_FOUND_ROWS * from users  limit " + offset + ", " + noOfRecords;
+			}
+			statement=connection.prepareStatement(query);
+			if(departmentId!=0)
+			{statement.setInt(1,departmentId);}
 			ResultSet resultSet= statement.executeQuery();
 			while(resultSet.next())
 			{
@@ -251,12 +264,12 @@ public class LoginDao {
 						resultSet.getInt("role_id"),resultSet.getInt("department_id"));
 				UserDtoList.add(userDto);
 			}
-			
+
 			resultSet.close();
 			resultSet = statement.executeQuery("SELECT FOUND_ROWS()");
-  
-            if (resultSet.next())
-               this.noOfRecords = resultSet.getInt(1);
+
+			if (resultSet.next())
+				this.noOfRecords = resultSet.getInt(1);
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
@@ -267,4 +280,83 @@ public class LoginDao {
 	}
 
 	public int getNoOfRecords() { return noOfRecords; }
+
+
+
+	public boolean deleteUserById(int userId) 
+	{  
+		boolean result=false;
+		UserDto userDto =null;
+		Connection connection=null;
+		PreparedStatement statement=null;
+		try {
+			connection = DatabaseConnection.getConnectionObject();
+			statement=connection.prepareStatement(" delete from users where user_id=?");
+			statement.setInt(1,userId);	
+			if(statement.executeUpdate()>0)
+			{result= true;}
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+		return result;
+
+	}
+
+
+
+
+	public boolean saveAccessRequest(AccessRequest request) 
+	{
+
+		Connection con=null;
+		boolean result=false;
+		try
+		{
+			con = DatabaseConnection.getConnectionObject();
+			PreparedStatement stmt=
+					con.prepareStatement("insert into access_request (user_id,user_role,request_status)"
+							+ "values(?,?,?)");  
+			stmt.setInt(1,request.getUserId());  
+			stmt.setString(2,request.getUserRole()); 
+			stmt.setString(3,request.getRequestStatus());  
+			if(stmt.executeUpdate()>0) {result=true;}
+
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		return result;
+
+
+	}
+
+
+	public String getRequestStatus(int id)
+	{
+		Connection connection=null;
+		String requestStatus=null;
+		try 
+		{
+			connection = DatabaseConnection.getConnectionObject();
+			PreparedStatement statement=connection.prepareStatement("select request_status from access_request where user_id=?");
+			statement.setInt(1, id);
+			ResultSet resultSet= statement.executeQuery();
+			while(resultSet.next())
+			{
+				requestStatus=resultSet.getString("request_status");
+				
+			}
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		} 
+
+		return requestStatus;
+
+	}
+
+
+
 }

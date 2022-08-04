@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.lambton.org.artistmanagement.bean.AccessRequest;
 import com.lambton.org.artistmanagement.bean.Department;
 import com.lambton.org.artistmanagement.bean.Login;
 import com.lambton.org.artistmanagement.bean.Role;
@@ -122,10 +123,11 @@ public class LoginService {
 		LoginDao dao =new LoginDao();
 		int page = 1;
 		int recordsPerPage = 5;
+		int departmentId=(request.getParameter("departmentId")==null)?0:Integer.parseInt(request.getParameter("departmentId"));
 		if (request.getParameter("page") != null)
 			page = Integer.parseInt(
 					request.getParameter("page"));
-		List<UserDto> userDtoList=dao.getAllUsersByPage((page - 1) * recordsPerPage,recordsPerPage);
+		List<UserDto> userDtoList=dao.getAllUsersByPage((page - 1) * recordsPerPage,recordsPerPage,departmentId);
 		int noOfRecords = dao.getNoOfRecords();
 		int noOfPages = (int)Math.ceil(noOfRecords * 1.0/ recordsPerPage);
 		List<User> userList=null;
@@ -153,4 +155,58 @@ public class LoginService {
 	}
 
 
+	public Map<String,Object> processUserById(int userId)
+	{
+		HashMap<String,Object> data=new HashMap<String, Object>();
+		LoginDao loginDao=new LoginDao();
+		UserDto userDto=loginDao.getUserById(userId);
+		User user=null;
+		if (null!=userDto)
+		{
+
+			Role role=loginDao.getRoleById(userDto.getRoleId());
+			Department department=loginDao.getdepartmentById(userDto.getDepartmentId());
+			user =new User(userDto.getUserId(),userDto.getFirstName(),userDto.getLastName(),userDto.getPassword(),userDto.getEmail(),
+					userDto.getAddress(),userDto.getDob(),userDto.getRegisteredOn(),userDto.getPhoneNumber(), role, department);
+			data.put("user",user);	
+		}
+
+		else
+		{
+			data.put("message","something went wrong");
+		}
+		return data;
+
+
+	}
+
+
+	public boolean processUserDeletionById(int userId)
+	{
+		HashMap<String,Object> data=new HashMap<String, Object>();// do i need map to send data or controller
+		LoginDao loginDao=new LoginDao();
+		return loginDao.deleteUserById(userId);	
+	}
+
+	public boolean processAccessRequest(int id)
+	{
+		LoginDao loginDao=new LoginDao();
+		UserDto userDto=loginDao.getUserById(id);
+		User user=null;
+		AccessRequest request=null;
+		if (null!=userDto)
+		{
+
+			Role role=loginDao.getRoleById(userDto.getRoleId());
+			Department department=loginDao.getdepartmentById(userDto.getDepartmentId());
+			user =new User(userDto.getUserId(),userDto.getFirstName(),userDto.getLastName(),userDto.getPassword(),userDto.getEmail(),
+					userDto.getAddress(),userDto.getDob(),userDto.getRegisteredOn(),userDto.getPhoneNumber(), role, department);
+			request=new AccessRequest(user.getUserId(),user.getRole().getRoleName(),"PENDING");
+
+
+		}
+
+		return loginDao.saveAccessRequest(request);//
+
+	}
 }

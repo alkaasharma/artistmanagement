@@ -23,13 +23,24 @@
 </head>
 <body>
 	${message}
-	<form:form method="post" action="editArtistProfile"
+
+	<a href="viewArtistProfile">My profile</a>
+	<a href="logoutProfile">Logout profile</a>
+
+	<c:if test="${user.role.roleName =='ARTIST'}">
+
+		<!-- <button onclick=requestRole(${user})>request elevated access</button>how to send object to controller -->
+		<span id="status">
+			<button onclick=requestRole(${user.userId})>request elevated
+				access</button>
+		</span>
+
+	</c:if>
+
+	<form:form method="post"
+		action=" ${pageContext.request.contextPath}/editArtistProfile"
 		modelAttribute="user">
 		<table>
-			<tr>
-				<td colspan=2><button>request elevated access</button></td>
-			</tr>
-
 
 			<tr>
 				<td></td>
@@ -100,11 +111,6 @@
 					</form:select></td>
 			</tr>
 
-
-
-
-
-
 			<tr>
 				<td></td>
 				<td><input type="submit" value="update" /></td>
@@ -118,6 +124,23 @@
 		$(function() {
 			$('#datepicker').datepicker();
 		});
+		
+		function requestRole(id)
+		{
+		   alert(id);
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					alert(this.response);
+					document.getElementById("status").innerHTML = this.response;
+				}
+			};
+			xhttp.open("POST", "accessRequest/"+id, true);
+			xhttp.send();
+		   
+		}
 	</script>
+
+	<a href="welcome_artist.jsp">back</a>
 </body>
 </html>

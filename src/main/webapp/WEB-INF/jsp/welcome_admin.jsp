@@ -11,7 +11,7 @@
 WELCOME ${user.role.roleName}<br>
 <a href="viewArtistProfile">My profile</a>
 <a href="viewUsers">View Users</a>
-<a href="viewUsers">Access Requests</a>
+<a href="accessRequest">Access Requests</a>
 <a href="logoutProfile">Logout profile</a>
 </body>
 </html>

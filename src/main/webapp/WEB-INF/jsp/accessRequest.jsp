@@ -15,9 +15,6 @@ a.disabled {
 </style>
 </head>
 <body>
-<a href="viewArtistProfile">My profile</a>
-<a href="viewUsers">View Users</a>
-<a href="logoutProfile">Logout profile</a>
 
 	<table border="1" cellpadding="5" cellspacing="5" id="usrtable"> 
 		<tr>
@@ -45,12 +42,12 @@ a.disabled {
 		</tr>
 
 		<tr>
-			<th>USER ID</th>
+			<th>REQUEST ID</th>
 			<th>FIRST NAME</th>
 			<th>LAST NAME</th>
 			<th>ACCESS TYPE</th>
 			<th>DEPARTMENT</th>
-			<th>OPERATION</th>
+			<th>REQUEST STATUS</th>
 		</tr>
 
 		<c:forEach items="${userList}" var="user">
@@ -62,8 +59,8 @@ a.disabled {
 				<td>${user.department.departmentName}</td>
 				<td><c:choose>
 						<c:when test="${user.role.roleName =='ARTIST'}">
-							<a href="updateUser/${user.userId}" class="btn btn-primary">Update</a>
-							<a href="deleteUser/${user.userId}" class="btn btn-primary">Delete</a>
+							<a href="updateUser/${user.userId}" class="btn btn-primary">ACCEPT</a>
+							<a href="deleteUser/${user.userId}" class="btn btn-primary">DELETE</a>
 						</c:when>
 						<c:otherwise>
 							<a class="disabled" href="">Update</a>
@@ -73,15 +70,6 @@ a.disabled {
 			</tr>
 		</c:forEach>
 
-
-		<%--For displaying Previous link except 
-		for the 1st page --%>
-		<%-- <c:if test="${currentPage != 1}">
-		<td><a href="viewUsers?page=${currentPage - 1}">Previous</a></td>
-	</c:if> --%>
-
-		<%--For displaying Page numbers. 
-    The when condition does not display a link for the current page--%>
 
 		<tr>
 			<c:forEach begin="1" end="${noOfPages}" var="i">
@@ -99,25 +87,6 @@ a.disabled {
 
 	</table>
 
-	<%--For displaying Next link --%>
-	<%-- <c:if test="${currentPage lt noOfPages}">
-		<td><a href="viewUsers?page=${currentPage + 1}">Next</a></td>
-	</c:if> --%>
 
-	<!--view users on the basis of departments-->
-	<script type="text/javascript">
-		function getUsers(id) {
-			var department = id;
-			var xhttp = new XMLHttpRequest();
-			xhttp.onreadystatechange = function() {
-				if (this.readyState == 4 && this.status == 200) {
-					document.getElementById("usrtable").innerHTML = this.response;
-				}
-			};
-			xhttp.open("GET", "viewUsers?departmentId=" + department, true);
-			xhttp.send();
-		}
-	</script>
-<a href="welcome_manager">back</a>
 </body>
 </html>

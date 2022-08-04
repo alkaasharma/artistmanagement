@@ -7,13 +7,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.lambton.org.artistmanagement.bean.Department;
@@ -36,6 +36,7 @@ public class LoginController {
 	}
 
 
+
 	@RequestMapping(value="loggedIn" ,method=RequestMethod.POST)
 	String login(HttpSession session ,@ModelAttribute("login")Login login,Model model)
 	{
@@ -47,7 +48,7 @@ public class LoginController {
 
 			String role=user.getRole().getRoleName();
 			session.setAttribute("loggedInUser", user);
-			model.addAttribute("user",user);
+			model.addAttribute("user",user);//do i need it can't i use session to getuser information 
 			if(role.equals("ADMINISTRATOR"))
 			{
 				return "welcome_admin";
@@ -80,7 +81,6 @@ public class LoginController {
 	ModelAndView viewProfile(HttpSession session)
 	{
 		User user=(User) session.getAttribute("loggedInUser");//shoud i store only userId?
-		System.out.println("from session " +user );
 		LoginService loginService=new LoginService();
 		Map<String,Object> departmentDataMap= loginService.processDepartmentList();
 		Map<String,Object> roleDataMap= loginService.processRoleList();
@@ -89,7 +89,7 @@ public class LoginController {
 		ModelAndView mv= new ModelAndView();
 		if(departmentList!=null && roleList!=null)
 		{
-			mv.addObject("user",user);//??how i am getting user object without mv.
+			mv.addObject("user",user);
 			mv.addObject("roleList",roleList);
 			mv.addObject("departmentList",departmentList);
 			mv.setViewName("profile");
@@ -106,21 +106,20 @@ public class LoginController {
 
 	@RequestMapping(value="editArtistProfile", method = RequestMethod.POST)
 	ModelAndView editProfile(@ModelAttribute("user")User editedInfo,HttpSession session )
-	{//if changed email????
-		System.out.println(editedInfo);
+	{
 		ModelAndView mv= new ModelAndView();
 		LoginService loginService=new LoginService();
 		Map<String,Object> dataMap=loginService.processUpdateInformation(editedInfo);
 		User editedUser=(User)dataMap.get("editedUser");
-		System.out.println(editedUser);
 		if(editedUser!=null)//information updated
 		{
 			User user=(User) session.getAttribute("loggedInUser");
-			session.setAttribute("loggedInUser",editedUser);
-			//if password changed
+
+			if(user.getUserId()==editedUser.getUserId())
+			{session.setAttribute("loggedInUser",editedUser);
 			if(editedUser.getPassword().equals(user.getPassword()))
 			{
-				//no need to logout continue with process
+				//no need to logout continue with process if password same
 				Map<String,Object> departmentDataMap= loginService.processDepartmentList();
 				Map<String,Object> roleDataMap= loginService.processRoleList();
 				mv.addObject("user", editedUser);
@@ -131,10 +130,16 @@ public class LoginController {
 
 			}
 			else 
-			{   // need to logout and then logged in
+			{   //if password changed need to logout and then logged in again
 				mv.addObject("login", new Login());
 				mv.setViewName("loginForm");
 
+			}
+			}
+
+			else 
+			{
+				mv.setViewName("redirect:/viewUsers");	
 			}
 
 		}
@@ -162,7 +167,8 @@ public class LoginController {
 
 
 		if(userList!=null)
-		{		mv.addObject("userList", userList);
+		{mv.addObject("userList", userList);
+		mv.addObject("selectedDepartment",request.getParameter("departmentId"));
 		mv.addObject("noOfPages", (Integer)dataMap.get("noOfPages"));
 		mv.addObject("currentPage",(Integer)dataMap.get("page"));
 		mv.addObject("departmentList",(List<Department>)departmentDataMap.get("departmentList"));
@@ -173,10 +179,73 @@ public class LoginController {
 		{
 			mv.addObject("error",dataMap.get("message"));
 			mv.setViewName("error");
-		}
+		}	
 
 		return mv;
 
 	}
+
+
+
+	@RequestMapping(value="updateUser/{userId}")
+	String updateUser(@PathVariable int userId,Model model)
+	{
+		LoginService loginService=new LoginService();
+		Map<String,Object> dataMap=	loginService.processUserById(userId);
+		User user=(User)dataMap.get("user");
+		if(null!=user)
+		{   Map<String,Object> departmentDataMap= loginService.processDepartmentList();
+		model.addAttribute("departmentList",(List<Department>)departmentDataMap.get("departmentList"));
+		model.addAttribute("user", user);
+		return "profile";
+		}
+		else 
+		{
+			model.addAttribute("error", dataMap.get("message"));
+			return "redirect:/viewUsers";
+		}
+
+	}
+
+
+
+	@RequestMapping(value="deleteUser/{userId}")
+	String deleteUser(@PathVariable int userId,Model model)
+	{
+		LoginService loginService=new LoginService();
+		boolean result=loginService.processUserDeletionById(userId);
+
+		if(!result)
+		{   
+			model.addAttribute("error","something went wrong please try again");
+			return "viewUsers";
+		}
+		else 
+		{
+			return "redirect:/viewUsers"; /* need of "/" beforeviewusers */
+		}
+
+	}
+	
+	
+
+	@RequestMapping(value="accessRequest/{id}")
+	@ResponseBody//??
+	String accessRequest(@PathVariable int id)
+	{
+		LoginService service=new LoginService();
+		if(service.processAccessRequest(id))
+		{
+		   	return "request is pending";
+		}
+		else
+		{
+			return "error";	
+		}
+		
+	}
+
+
+	
 
 }
